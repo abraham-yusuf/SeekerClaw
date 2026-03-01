@@ -5,11 +5,14 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import com.seekerclaw.app.MainActivity
 import com.seekerclaw.app.R
 import com.seekerclaw.app.SeekerClawApplication
@@ -46,7 +49,14 @@ class OpenClawService : Service() {
         LogCollector.init(applicationContext)
 
         val notification = createNotification("SeekerClaw is running")
-        startForeground(NOTIFICATION_ID, notification)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ServiceCompat.startForeground(
+                this, NOTIFICATION_ID, notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+            )
+        } else {
+            startForeground(NOTIFICATION_ID, notification)
+        }
 
         // Clear any lingering setup-required notification from a previous version.
         getSystemService(android.app.NotificationManager::class.java)

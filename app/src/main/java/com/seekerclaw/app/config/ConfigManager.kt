@@ -506,7 +506,8 @@ object ConfigManager {
         val permPhone = perm(Manifest.permission.CALL_PHONE)
         val permContacts = perm(Manifest.permission.READ_CONTACTS)
         val permLocation = perm(Manifest.permission.ACCESS_FINE_LOCATION)
-        val permNotifications = perm(Manifest.permission.POST_NOTIFICATIONS)
+        val permNotifications = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            perm(Manifest.permission.POST_NOTIFICATIONS) else "granted"
 
         // Wallet
         val walletAddress = getWalletAddress(context)

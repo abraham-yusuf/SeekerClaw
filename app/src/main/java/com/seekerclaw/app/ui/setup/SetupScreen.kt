@@ -3,6 +3,7 @@ package com.seekerclaw.app.ui.setup
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import com.seekerclaw.app.util.LogCollector
 import com.seekerclaw.app.util.LogLevel
 import android.content.pm.PackageManager
@@ -172,6 +173,7 @@ fun SetupScreen(onSetupComplete: () -> Unit) {
 
     var hasNotificationPermission by remember {
         mutableStateOf(
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED
         )
@@ -409,7 +411,12 @@ fun SetupScreen(onSetupComplete: () -> Unit) {
             },
             confirmButton = {
                 TextButton(onClick = {
-                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        hasNotificationPermission = true
+                        showNotificationDialog = false
+                    }
                 }) {
                     Text(
                         "Enable",
